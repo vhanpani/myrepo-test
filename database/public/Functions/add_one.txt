@@ -1,0 +1,23 @@
+-- FUNCTION: public.add_one(integer)
+
+-- DROP FUNCTION public.add_one(integer);
+
+CREATE OR REPLACE FUNCTION public.add_one(
+	integer)
+    RETURNS integer
+    LANGUAGE 'plpgsql'
+
+    COST 100
+    VOLATILE 
+    ROWS 0
+AS $BODY$
+
+    BEGIN
+        RETURN $1 + 1;
+    END;
+
+$BODY$;
+
+ALTER FUNCTION public.add_one(integer)
+    OWNER TO "JIK_b8K7k_17";
+

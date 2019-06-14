@@ -1,0 +1,23 @@
+-- FUNCTION: public.gettimeinterval(date, text)
+
+-- DROP FUNCTION public.gettimeinterval(date, text);
+
+CREATE OR REPLACE FUNCTION public.gettimeinterval(
+	date,
+	text)
+    RETURNS integer
+    LANGUAGE 'sql'
+
+    COST 100
+    VOLATILE 
+    ROWS 0
+AS $BODY$
+SELECT id
+  FROM report.timemaster_report 
+  WHERE timetype = $2
+  and to_char($1,'HH24:MI:SS') between timefrom and timeto
+$BODY$;
+
+ALTER FUNCTION public.gettimeinterval(date, text)
+    OWNER TO "JIK_b8K7k_17";
+

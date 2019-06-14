@@ -1,0 +1,98 @@
+-- FUNCTION: public.td_svc_exit_export()
+
+-- DROP FUNCTION public.td_svc_exit_export();
+
+CREATE OR REPLACE FUNCTION public.td_svc_exit_export(
+	)
+    RETURNS SETOF text 
+    LANGUAGE 'sql'
+
+    COST 100
+    VOLATILE 
+    ROWS 1000
+AS $BODY$
+
+-- update to processing only 4 row per request
+
+SELECT td_flag_export('td_svc_exit') ; 
+
+SELECT 'message_type, payload_version_number, message_sequence_number, bss_equipment_id, length_of_message, transaction_id, txn_datetime, service_provider_id, unconfirmed_indicator, project_id, issuer_id, card_id, card_type, lifecycle, card_status, block_flag, test_flag, card_sequence_number, card_unblock_sequence_number, personalization_flag, purse_value, lav_service_provider_id, lav_location_code, lav_txn_datetime, lav_amount, lav_payment, lav_equipmentid, lav_csn, transaction_value, operating_day, equipment_no, fare, entry_location, entry_equipno, exit_location, fare_mode, array_number, fare_collection, entry_datetime, trans_mac_version, trans_mac_value, bts_ext_format_version_number, bts_ext_ar_seq_num, bts_ext_device_msg_seq_num, bts_ext_station_id, bts_ext_equipment_id, bts_ext_equipment_number, bts_ext_array_number, bts_ext_cloud_id_ar_seq, bts_ext_cloud_id_dev_msg_seq, bts_ext_spare'
+
+UNION ALL 
+ 
+   
+select coalesce(message_type::text,'0') 
+|| ', ' ||    coalesce(payload_version_number::text,'0')
+|| ', ' ||    coalesce(message_sequence_number::text,'0') 
+|| ', ' ||    hex_to_int(coalesce(bss_equipment_id::text,'0'))  
+|| ', ' ||    coalesce(length_of_message::text,'0') 
+|| ', ' ||    coalesce(transaction_id::text,'0') 
+|| ', ' ||    coalesce((txn_datetime + interval '7 hours' )::text,'0') 
+|| ', ' ||    coalesce(service_provider_id::text,'0') 
+|| ', ' ||    coalesce(unconfirmed_indicator::text,'0') 
+|| ', ' ||    coalesce(project_id::text,'0') 
+|| ', ' ||    coalesce(issuer_id::text,'0') 
+|| ', ' ||    coalesce(card_id::text,'0') 
+|| ', ' ||    coalesce(card_type::text,'0') 
+|| ', ' ||    coalesce(lifecycle::text,'0') 
+|| ', ' ||    coalesce(card_status::text,'0') 
+|| ', ' ||    coalesce(block_flag::text,'0') 
+|| ', ' ||    coalesce(test_flag::text,'0') 
+|| ', ' ||    coalesce(card_sequence_number::text,'0') 
+|| ', ' ||    coalesce(card_unblock_sequence_number::text,'0') 
+|| ', ' ||    coalesce(personalization_flag::text,'0') 
+|| ', ' ||    coalesce(purse_value::text,'0') 
+|| ', ' ||    coalesce(lav_service_provider_id::text,'0') 
+|| ', ' ||    coalesce(lav_location_code::text,'0') 
+|| ', ' ||    coalesce(lav_txn_datetime::text,'0') 
+|| ', ' ||    coalesce(lav_amount::text,'0') 
+|| ', ' ||    coalesce(lav_payment::text,'0') 
+|| ', ' ||    coalesce(lav_equipmentid::text,'0') 
+|| ', ' ||    coalesce(lav_csn::text,'0') 
+|| ', ' ||    coalesce(transaction_value::text,'0') 
+|| ', ' ||    coalesce(operating_day::text,'0') 
+|| ', ' ||    coalesce(equipment_no::text,'0') 
+|| ', ' ||    coalesce(fare::text,'0') 
+|| ', ' ||    coalesce(entry_location::text,'0')
+|| ', ' ||    coalesce(entry_equipno::text,'0')
+|| ', ' ||    coalesce(exit_location::text,'0')
+|| ', ' ||    coalesce(fare_mode::text,'0')
+|| ', ' ||    coalesce(array_number::text,'0')
+|| ', ' ||    coalesce(fare_collection::text,'0')
+|| ', ' ||    coalesce((entry_datetime + interval '7 hours' ) ::text,'0')
+|| ', ' ||    coalesce(trans_mac_version::text,'0') 
+|| ', ' ||    coalesce(trans_mac_value::text,'0') 
+|| ', ' ||    coalesce(bts_ext_format_version_number::text,'0') 
+|| ', ' ||    coalesce(bts_ext_ar_seq_num::text,'0') 
+|| ', ' ||    coalesce(bts_ext_device_msg_seq_num::text,'0') 
+|| ', ' ||    coalesce(bts_ext_station_id::text,'0') 
+|| ', ' ||    coalesce(bts_ext_equipment_id::text,'0') 
+|| ', ' ||    coalesce(bts_ext_equipment_number::text,'0') 
+|| ', ' ||    coalesce(bts_ext_array_number::text,'0') 
+|| ', ' ||    coalesce(bts_ext_cloud_id_ar_seq::text,'0') 
+|| ', ' ||    coalesce(bts_ext_cloud_id_dev_msg_seq::text,'0') 
+|| ', ' ||    coalesce(bts_ext_spare::text,'0') 
+from td_svc_exit  
+where 
+(
+ssid <=  (SELECT coalesce(max(ssid), date '1970-01-01') FROM  td_ss_info WHERE report = 'td_svc_exit' and ( reported = 'P' )) 
+and ssid > (SELECT coalesce(max(ssid), date '1970-01-01') FROM  td_ss_info WHERE report  = 'td_svc_exit' and ( reported  = 'Y' ))
+	AND  offline_replace_recovery = '0'	
+) OR
+(
+	ssid <=  (SELECT coalesce(max(ssid), date '1970-01-01') FROM  td_ss_info WHERE report = 'td_svc_exit_offline_replace_recovery' and ( reported = 'P' )) 
+and ssid > (SELECT coalesce(max(ssid), date '1970-01-01') FROM  td_ss_info WHERE report  = 'td_svc_exit_offline_replace_recovery' and ( reported  = 'Y' ))
+AND  offline_replace_recovery = '1'	
+
+)
+
+$BODY$;
+
+
+COMMENT ON FUNCTION public.td_svc_exit_export()
+    IS 'Version: 201905211640
+	201905211640: CLOUDID-695: change offline_replace_recovery N to 0 and Y to 1
+	201808231600: CLOUDID-568
+	201803221500 : update to +7h to timestamp
+	201801291500 : initial vesion';
+

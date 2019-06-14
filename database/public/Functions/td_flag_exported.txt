@@ -1,0 +1,30 @@
+-- FUNCTION: public.td_flag_exported(text)
+
+-- DROP FUNCTION public.td_flag_exported(text);
+
+CREATE OR REPLACE FUNCTION public.td_flag_exported(
+	tablename text)
+    RETURNS void
+    LANGUAGE 'sql'
+
+    COST 100
+    VOLATILE 
+AS $BODY$
+
+-- update to processing
+update td_ss_info set  reported = 'Y' 
+WHERE report = tablename and (reported = 'P') ;
+
+-- update to processing
+update td_ss_info set  reported = 'Y' 
+WHERE report = tablename || '_offline_replace_recovery' and (reported = 'P') ;
+
+$BODY$;
+
+
+
+COMMENT ON FUNCTION public.td_flag_exported(text)
+    IS 'Version: Version: 201808231600
+Change log
+201808231600: CLOUDID-568';
+

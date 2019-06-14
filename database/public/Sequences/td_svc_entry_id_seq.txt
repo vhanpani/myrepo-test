@@ -1,0 +1,9 @@
+CREATE SEQUENCE public.td_svc_entry_id_seq
+    INCREMENT 1
+    START 1286
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE public.td_svc_entry_id_seq
+    OWNER TO "JIK_b8K7k_17";

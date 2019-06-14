@@ -1,0 +1,23 @@
+-- FUNCTION: public.td_stp_exit_exported()
+
+-- DROP FUNCTION public.td_stp_exit_exported();
+
+CREATE OR REPLACE FUNCTION public.td_stp_exit_exported(
+	)
+    RETURNS void
+    LANGUAGE 'sql'
+
+    COST 100
+    VOLATILE 
+    ROWS 0
+AS $BODY$
+
+
+SELECT td_flag_exported('td_stp_exit') ; 
+
+
+$BODY$;
+
+ALTER FUNCTION public.td_stp_exit_exported()
+    OWNER TO "JIK_b8K7k_17";
+

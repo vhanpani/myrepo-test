@@ -1,0 +1,22 @@
+-- FUNCTION: public."exec"(text)
+
+-- DROP FUNCTION public."exec"(text);
+
+CREATE OR REPLACE FUNCTION public.exec(
+	text)
+    RETURNS text
+    LANGUAGE 'plpgsql'
+
+    COST 100
+    VOLATILE 
+    ROWS 0
+AS $BODY$
+ 
+BEGIN EXECUTE $1; 
+RETURN $1; 
+END 
+$BODY$;
+
+ALTER FUNCTION public."exec"(text)
+    OWNER TO "JIK_b8K7k_17";
+

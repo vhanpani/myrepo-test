@@ -1,0 +1,44 @@
+-- FUNCTION: public.td_flag_export(text)
+
+-- DROP FUNCTION public.td_flag_export(text);
+
+CREATE OR REPLACE FUNCTION public.td_flag_export(
+	tablename text)
+    RETURNS void
+    LANGUAGE 'sql'
+
+    COST 100
+    VOLATILE 
+AS $BODY$
+
+UPDATE td_ss_info ss
+ set  reported = 'P' , requesttime = now()
+FROM (
+    SELECT id 
+    FROM   td_ss_info    
+  	WHERE report = tablename and ( reported = 'N'  or reported = 'P')
+    ORDER  BY ssid ASC NULLS LAST
+    LIMIT  4
+    ) sstop
+WHERE sstop.id = ss.id;
+
+-- update for offline
+
+UPDATE td_ss_info ss
+ set  reported = 'P' , requesttime = now()
+FROM (
+    SELECT id 
+    FROM   td_ss_info    
+  	WHERE report = tablename || '_offline_replace_recovery' and ( reported = 'N'  or reported = 'P')
+    ORDER  BY ssid ASC NULLS LAST
+    LIMIT  4
+    ) sstop
+WHERE sstop.id = ss.id;
+
+$BODY$;
+
+COMMENT ON FUNCTION public.td_flag_export(text)
+    IS 'Version: Version: 201808231600
+Change log
+201808231600: CLOUDID-568';
+

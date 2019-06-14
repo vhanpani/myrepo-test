@@ -1,0 +1,1 @@
+ALTER TABLE td_stp_exit ALTER COLUMN entry_datetime TYPE timestamp without time zone 

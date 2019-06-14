@@ -1,0 +1,28 @@
+-- FUNCTION: public.hex_to_int(character varying)
+
+-- DROP FUNCTION public.hex_to_int(character varying);
+
+CREATE OR REPLACE FUNCTION public.hex_to_int(
+	hexval character varying)
+    RETURNS bigint
+    LANGUAGE 'plpgsql'
+
+    COST 100
+    IMMUTABLE STRICT 
+    ROWS 0
+AS $BODY$
+
+
+DECLARE
+    result  bigint;
+BEGIN
+    EXECUTE 'SELECT x''' || hexval || '''::bigint' INTO result;
+    RETURN result;
+END;
+
+
+$BODY$;
+
+ALTER FUNCTION public.hex_to_int(character varying)
+    OWNER TO "JIK_b8K7k_17";
+

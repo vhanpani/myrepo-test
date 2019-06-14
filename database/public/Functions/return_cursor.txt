@@ -1,0 +1,27 @@
+-- FUNCTION: public.return_cursor()
+
+-- DROP FUNCTION public.return_cursor();
+
+CREATE OR REPLACE FUNCTION public.return_cursor(
+	)
+    RETURNS SETOF refcursor 
+    LANGUAGE 'plpgsql'
+
+    COST 100
+    VOLATILE 
+    ROWS 1000
+AS $BODY$
+
+ DECLARE
+  rf refcursor;
+ BEGIN
+  OPEN rf FOR
+    SELECT * FROM report.v_trips;
+  RETURN Next rf;
+ END;
+ 
+$BODY$;
+
+ALTER FUNCTION public.return_cursor()
+    OWNER TO "JIK_b8K7k_17";
+

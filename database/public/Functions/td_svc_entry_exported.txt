@@ -1,0 +1,23 @@
+-- FUNCTION: public.td_svc_entry_exported()
+
+-- DROP FUNCTION public.td_svc_entry_exported();
+
+CREATE OR REPLACE FUNCTION public.td_svc_entry_exported(
+	)
+    RETURNS void
+    LANGUAGE 'sql'
+
+    COST 100
+    VOLATILE 
+    ROWS 0
+AS $BODY$
+
+
+SELECT td_flag_exported('td_svc_entry') ; 
+
+
+$BODY$;
+
+ALTER FUNCTION public.td_svc_entry_exported()
+    OWNER TO "JIK_b8K7k_17";
+
